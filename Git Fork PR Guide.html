@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Fork & Pull Request Guide</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --accent: #238636;
+    --accent-hover: #2ea043;
+    --blue: #1f6feb;
+    --blue-light: #388bfd;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --code-bg: #010409;
+    --tag-bg: #21262d;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #a371f7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+
+  .logo svg { color: var(--text); }
+
+  /* LANG SWITCHER */
+  .lang-switcher {
+    display: flex;
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .lang-btn {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .lang-btn.active {
+    background: var(--blue);
+    color: #fff;
+  }
+
+  .lang-btn:hover:not(.active) {
+    background: var(--surface2);
+    color: var(--text);
+  }
+
+  /* MAIN */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* HERO */
+  .hero {
+    text-align: center;
+    padding: 48px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(31, 111, 235, 0.15);
+    border: 1px solid rgba(56, 139, 253, 0.3);
+    color: var(--blue-light);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .hero h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
+
+  .hero p {
+    color: var(--text-muted);
+    font-size: 16px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: rgba(31, 111, 235, 0.08);
+    border: 1px solid rgba(31, 111, 235, 0.3);
+    border-left: 3px solid var(--blue);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 36px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 14px;
+    color: #c9d1d9;
+  }
+
+  .info-box .icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  /* STEPS */
+  .steps { display: flex; flex-direction: column; gap: 28px; }
+
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .step:hover { border-color: #4a5568; }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 22px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .step-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .step:nth-child(1) .step-num { background: rgba(163, 113, 247, 0.2); color: var(--purple); border: 1px solid rgba(163,113,247,0.4); }
+  .step:nth-child(2) .step-num { background: rgba(31, 111, 235, 0.2); color: var(--blue-light); border: 1px solid rgba(56,139,253,0.4); }
+  .step:nth-child(3) .step-num { background: rgba(210, 153, 34, 0.2); color: var(--orange); border: 1px solid rgba(210,153,34,0.4); }
+  .step:nth-child(4) .step-num { background: rgba(35, 134, 54, 0.2); color: var(--green); border: 1px solid rgba(63,185,80,0.4); }
+
+  .step-title { font-size: 16px; font-weight: 600; }
+
+  .step-body { padding: 22px; }
+
+  /* ORDERED LIST */
+  .step-body ol {
+    padding-left: 22px;
+    margin-bottom: 16px;
+    color: #c9d1d9;
+  }
+
+  .step-body ol li { margin-bottom: 10px; font-size: 14px; }
+
+  /* CODE BLOCK */
+  .code-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin: 16px 0;
+    overflow: hidden;
+  }
+
+  .code-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px;
+    background: #161b22;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-lang {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .copy-btn:hover { border-color: var(--blue-light); color: var(--blue-light); }
+  .copy-btn.copied { border-color: var(--green); color: var(--green); }
+
+  .code-content {
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+
+  .code-content .line { display: block; }
+  .code-content .prompt { color: var(--green); user-select: none; }
+  .code-content .cmd { color: #79c0ff; }
+  .code-content .arg { color: #a5d6ff; }
+  .code-content .str { color: #a8d8a8; }
+  .code-content .flag { color: #ffa657; }
+
+  /* INLINE CODE */
+  code {
+    background: rgba(110,118,129,0.15);
+    border: 1px solid rgba(110,118,129,0.3);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #ffa657;
+  }
+
+  /* TABLE */
+  .cmd-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+
+  .cmd-table th {
+    background: var(--surface2);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .cmd-table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--border);
+    color: #c9d1d9;
+  }
+
+  .cmd-table tr:last-child td { border-bottom: none; }
+  .cmd-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* SUCCESS BOX */
+  .success-box {
+    background: rgba(35, 134, 54, 0.1);
+    border: 1px solid rgba(63, 185, 80, 0.3);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* OWNER SECTION */
+  .owner-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px;
+    margin-top: 36px;
+  }
+
+  .owner-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .owner-steps { display: flex; flex-direction: column; gap: 0; }
+
+  .owner-step {
+    display: flex;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .owner-step:last-child { border-bottom: none; }
+
+  .owner-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .owner-step p { font-size: 14px; color: #c9d1d9; }
+
+  /* FLOW CHART */
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-top: 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+  }
+
+  .flow h3 {
+    width: 100%;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+
+  .flow-items {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+  }
+
+  .flow-step {
+    background: var(--tag-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .flow-arrow { color: var(--text-muted); font-size: 18px; padding: 0 2px; }
+
+  /* NOTE */
+  .note {
+    text-align: center;
+    margin-top: 36px;
+    color: var(--text-muted);
+    font-size: 13px;
+    border-top: 1px solid var(--border);
+    padding-top: 28px;
+  }
+
+  /* HIDDEN */
+  [data-lang] { display: none; }
+  [data-lang].visible { display: block; }
+  span[data-lang] { display: none; }
+  span[data-lang].visible { display: inline; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 24px; }
+    header { padding: 12px 16px; }
+    main { padding: 24px 16px 60px; }
+    .flow-items { gap: 8px; }
+    .flow-step { font-size: 12px; padding: 6px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+    <span>Fork & Pull Request Guide</span>
+  </div>
+
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('bn')">🇧🇩 বাংলা</button>
+    <button class="lang-btn" onclick="setLang('en')">🇬🇧 English</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">📘 GitHub Guide</div>
+    <h1>
+      <span data-lang="bn" class="visible">Fork & Pull Request করার নিয়ম</span>
+      <span data-lang="en">How to Fork & Create a Pull Request</span>
+    </h1>
+    <p>
+      <span data-lang="bn" class="visible">অন্যের রিপোজিটরিতে কোড এডিট করে রিকোয়েস্ট পাঠানোর সম্পূর্ণ গাইড — ৪টি সহজ ধাপে।</span>
+      <span data-lang="en">A complete guide to contributing code to someone else's repository — in 4 simple steps.</span>
+    </p>
+  </div>
+
+  <!-- INFO BOX -->
+  <div class="info-box">
+    <span class="icon">💡</span>
+    <div>
+      <span data-lang="bn" class="visible">যেহেতু আপনি ওনারের রিপোজিটরিতে সরাসরি <code>push</code> করার <strong>অনুমতি রাখেন না</strong>, তাই গিটহাবের স্ট্যান্ডার্ড নিয়ম হলো — প্রথমে <strong>Fork</strong> করে নিজের কপি বানান, এডিট করুন, তারপর <strong>Pull Request</strong> পাঠান।</span>
+      <span data-lang="en">Since you don't have <strong>write access</strong> to the owner's repository, GitHub's standard approach is — first <strong>Fork</strong> it to your account, make your edits, then send a <strong>Pull Request</strong>.</span>
+    </div>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-title">
+          <span data-lang="bn" class="visible">গিটহাবে Fork করুন</span>
+          <span data-lang="en">Fork the Repository on GitHub</span>
+        </div>
+      </div>
+      <div class="step-body">
+        <div data-lang="bn" class="visible">
+          <ol>
+            <li>ব্রাউজারে <strong>ওনারের রিপোজিটরির পেজ</strong>-এ যান।</li>
+            <li>পেজের ডানদিকে উপরে <code>Fork</code> বাটনটি খুঁজে ক্লিক করুন।</li>
+            <li>গিটহাব আপনার নিজের অ্যাকাউন্টে ওই প্রজেক্টের একটি <strong>হুবহু কপি</strong> তৈরি করে দেবে।</li>
+          </ol>
+        </div>
+        <div data-lang="en">
+          <ol>
+            <li>Go to the <strong>owner's repository page</strong> in your browser.</li>
+            <li>Find the <code>Fork</code> button at the top right of the page and click it.</li>
+            <li>GitHub will create an <strong>exact copy</strong> of the project under your own account.</li>
+          </ol>
+        </div>
+        <div class="success-box">
+          ✅ <span data-lang="bn" class="visible">এখন আপনার অ্যাকাউন্টে একটি কপি রেডি!</span>
+          <span data-lang="en">Your forked copy is now ready under your account!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-title">
+          <span data-lang="bn" class="visible">আপনার Fork Clone করুন</span>
+          <span data-lang="en">Clone Your Fork Locally</span>
+        </div>
+      </div>
+      <div class="step-body">
+        <p style="font-size:14px; color:#c9d1d9; margin-bottom:12px;">
+          <span data-lang="bn" class="visible">ওনারের রিপো নয়, <strong>আপনার কপিটি</strong> লোকাল মেশিনে ক্লোন করুন:</span>
+          <span data-lang="en">Clone <strong>your fork</strong> (not the owner's) to your local machine:</span>
+        </p>
+        <div class="code-block">
+          <div class="code-top">
+            <span class="code-lang">bash</span>
+            <button class="copy-btn" onclick="copyCode(this, 'git clone https://github.com/YOUR-USERNAME/repo-name.git\ncd repo-name')">
+              📋 <span data-lang="bn" class="visible">কপি করুন</span><span data-lang="en">Copy</span>
+            </button>
+          </div>
+          <div class="code-content">
+            <span class="line"><span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">clone</span> <span class="str">https://github.com/YOUR-USERNAME/repo-name.git</span></span>
+            <span class="line"><span class="prompt">$ </span><span class="cmd">cd</span> <span class="arg">repo-name</span></span>
+          </div>
+        </div>
+        <p style="font-size:13px; color:var(--text-muted); margin-top:10px;">
+          ⚠️ <span data-lang="bn" class="visible"><code>YOUR-USERNAME</code> এর জায়গায় আপনার গিটহাব ইউজারনেম এবং <code>repo-name</code> এর জায়গায় আসল রিপোর নাম দিন।</span>
+          <span data-lang="en">Replace <code>YOUR-USERNAME</code> with your GitHub username and <code>repo-name</code> with the actual repository name.</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-title">
+          <span data-lang="bn" class="visible">কোড এডিট করে Push করুন</span>
+          <span data-lang="en">Edit Code & Push to Your Fork</span>
+        </div>
+      </div>
+      <div class="step-body">
+        <p style="font-size:14px; color:#c9d1d9; margin-bottom:12px;">
+          <span data-lang="bn" class="visible">কোড এডিট করার পর নিচের কমান্ডগুলো একে একে রান করুন:</span>
+          <span data-lang="en">After editing the code, run these commands one by one:</span>
+        </p>
+        <div class="code-block">
+          <div class="code-top">
+            <span class="code-lang">bash</span>
+            <button class="copy-btn" onclick="copyCode(this, 'git add .\ngit commit -m \"Describe the edits you made\"\ngit push origin main')">
+              📋 <span data-lang="bn" class="visible">কপি করুন</span><span data-lang="en">Copy</span>
+            </button>
+          </div>
+          <div class="code-content">
+            <span class="line"><span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">add</span> <span class="flag">.</span></span>
+            <span class="line"><span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">commit</span> <span class="flag">-m</span> <span class="str">"Describe the edits you made"</span></span>
+            <span class="line"><span class="prompt">$ </span><span class="cmd">git</span> <span class="arg">push</span> <span class="flag">origin</span> <span class="arg">main</span></span>
+          </div>
+        </div>
+        <table class="cmd-table" style="margin-top:18px;">
+          <thead>
+            <tr>
+              <th><span data-lang="bn" class="visible">কমান্ড</span><span data-lang="en">Command</span></th>
+              <th><span data-lang="bn" class="visible">কাজ</span><span data-lang="en">Purpose</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>git add .</code></td>
+              <td><span data-lang="bn" class="visible">সব পরিবর্তন স্টেজ করে</span><span data-lang="en">Stages all changes</span></td>
+            </tr>
+            <tr>
+              <td><code>git commit -m</code></td>
+              <td><span data-lang="bn" class="visible">মেসেজসহ পরিবর্তন সেভ করে</span><span data-lang="en">Saves changes with a message</span></td>
+            </tr>
+            <tr>
+              <td><code>git push origin main</code></td>
+              <td><span data-lang="bn" class="visible">আপনার গিটহাব অ্যাকাউন্টে পাঠায়</span><span data-lang="en">Sends changes to your GitHub fork</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-num">4</div>
+        <div class="step-title">
+          <span data-lang="bn" class="visible">Pull Request (PR) পাঠান</span>
+          <span data-lang="en">Open a Pull Request</span>
+        </div>
+      </div>
+      <div class="step-body">
+        <div data-lang="bn" class="visible">
+          <ol>
+            <li>ব্রাউজারে <strong>আপনার গিটহাব অ্যাকাউন্টের</strong> ওই রিপোর পেজে যান।</li>
+            <li><code>Contribute</code> বা <code>Open Pull Request</code> অপশনটি খুঁজে ক্লিক করুন।</li>
+            <li><code>New pull request</code> বাটনে ক্লিক করুন।</li>
+            <li>একটি সুন্দর <strong>টাইটেল ও বিবরণ</strong> লিখে PR সাবমিট করুন।</li>
+          </ol>
+        </div>
+        <div data-lang="en">
+          <ol>
+            <li>Go to <strong>your forked repository</strong> page on GitHub.</li>
+            <li>Find and click the <code>Contribute</code> or <code>Open Pull Request</code> option.</li>
+            <li>Click the <code>New pull request</code> button.</li>
+            <li>Write a clear <strong>title and description</strong> of your changes and submit.</li>
+          </ol>
+        </div>
+        <div class="success-box">
+          ✅ <span data-lang="bn" class="visible">ওনারের কাছে নোটিফিকেশন চলে যাবে!</span>
+          <span data-lang="en">The repository owner will receive a notification!</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /steps -->
+
+  <!-- OWNER SECTION -->
+  <div class="owner-section">
+    <h2>
+      ✅ <span data-lang="bn" class="visible">ওনার এরপর কী করবেন?</span>
+      <span data-lang="en">What does the owner do next?</span>
+    </h2>
+    <div class="owner-steps">
+      <div class="owner-step">
+        <div class="owner-dot"></div>
+        <p><span data-lang="bn" class="visible">ওনারের কাছে PR নোটিফিকেশন পৌঁছাবে।</span><span data-lang="en">The owner receives a PR notification.</span></p>
+      </div>
+      <div class="owner-step">
+        <div class="owner-dot"></div>
+        <p><span data-lang="bn" class="visible">তিনি আপনার কোড <strong>রিভিউ</strong> করবেন।</span><span data-lang="en">They <strong>review</strong> your code changes.</span></p>
+      </div>
+      <div class="owner-step">
+        <div class="owner-dot"></div>
+        <p><span data-lang="bn" class="visible">সব ঠিক থাকলে <code>Merge</code> বাটনে ক্লিক করবেন।</span><span data-lang="en">If everything looks good, they click the <code>Merge</code> button.</span></p>
+      </div>
+      <div class="owner-step">
+        <div class="owner-dot"></div>
+        <p><span data-lang="bn" class="visible">মার্জ হলেই আপনার কোড ওনারের <strong>আসল রিপোজিটরিতে</strong> যুক্ত হয়ে যাবে!</span><span data-lang="en">Once merged, your code becomes part of the <strong>original repository</strong>!</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOW -->
+  <div class="flow">
+    <h3><span data-lang="bn" class="visible">পুরো প্রক্রিয়া এক নজরে</span><span data-lang="en">The full process at a glance</span></h3>
+    <div class="flow-items">
+      <div class="flow-step"><span data-lang="bn" class="visible">Fork করুন</span><span data-lang="en">Fork</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><span data-lang="bn" class="visible">Clone করুন</span><span data-lang="en">Clone</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><span data-lang="bn" class="visible">কোড এডিট করুন</span><span data-lang="en">Edit Code</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><span data-lang="bn" class="visible">Push করুন</span><span data-lang="en">Push</span></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step"><span data-lang="bn" class="visible">PR পাঠান</span><span data-lang="en">Open PR</span></div>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note">
+    📝 <span data-lang="bn" class="visible">এই প্রক্রিয়াটি ওপেন সোর্স প্রজেক্টে contribute করার স্ট্যান্ডার্ড পদ্ধতি।</span>
+    <span data-lang="en">This is the standard method for contributing to open source projects.</span>
+  </div>
+
+</main>
+
+<script>
+  let currentLang = 'bn';
+
+  function setLang(lang) {
+    currentLang = lang;
+
+    // update buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+
+    // switch block elements
+    document.querySelectorAll('[data-lang]').forEach(el => {
+      if (el.getAttribute('data-lang') === lang) {
+        el.classList.add('visible');
+      } else {
+        el.classList.remove('visible');
+      }
+    });
+
+    document.documentElement.lang = lang;
+  }
+
+  function copyCode(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const original = btn.innerHTML;
+      btn.innerHTML = '✅ <span class="visible">Copied!</span>';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
